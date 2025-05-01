@@ -92,7 +92,7 @@ if (contactForm) {
     
     // In a real application, you would send this data to a server
     alert('Thank you for your message! We will get back to you soon.');
-    contactForm.reset();
+    contactForm.submit();
   });
 }
 
