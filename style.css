@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'TheSeasons';
+  src: url('assets/fonts/The.Seasons/The.Seasons/TheSeasonsRegular.woff2') format('woff2');
+  font-weight: 700;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

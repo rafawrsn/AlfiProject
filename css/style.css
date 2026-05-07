@@ -73,7 +73,7 @@ ul {
 /* Container */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1700px;
   margin: 0 auto;
   padding: 0 var(--space-md);
 }
@@ -108,7 +108,7 @@ ul {
 }
 
 .secondary-btn:hover {
-  opacity: 0.9;
+  background-color: #1A4849;
   transform: translateY(-2px);
 }
 
@@ -139,8 +139,6 @@ ul {
 
 /* Footer */
 footer {
-  background-color: var(--primary-color);
-  color: var(--white);
   padding: var(--space-xl) 0 var(--space-md);
 }
 

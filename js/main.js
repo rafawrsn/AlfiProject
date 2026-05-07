@@ -1,6 +1,6 @@
-// Main JavaScript File
-
-// DOM Elements
+// =========================
+// DOM ELEMENTS
+// =========================
 const mobileMenu = document.getElementById('mobile-menu');
 const navMenu = document.querySelector('.nav-menu');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -9,42 +9,167 @@ const scrollTopBtn = document.querySelector('.scroll-top');
 const contactForm = document.getElementById('contactForm');
 const newsletterForm = document.getElementById('newsletterForm');
 
-// Mobile Menu Toggle
-if (mobileMenu) {
+// =========================
+// CAROUSEL (SAFE)
+// =========================
+const track = document.querySelector('.carousel-track');
+const slides = document.querySelectorAll('.slide');
+const nextBtn = document.querySelector('.next');
+const prevBtn = document.querySelector('.prev');
+
+if (track && slides.length > 0 && nextBtn && prevBtn) {
+  let index = 1;
+  let isMoving = false;
+
+  const firstClone = slides[0].cloneNode(true);
+  const lastClone = slides[slides.length - 1].cloneNode(true);
+
+  track.appendChild(firstClone);
+  track.insertBefore(lastClone, slides[0]);
+
+  const allSlides = document.querySelectorAll('.slide');
+
+  function updateSlide(animate = true) {
+    track.style.transition = animate ? "transform 0.4s ease" : "none";
+    track.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  updateSlide(false);
+
+  nextBtn.addEventListener('click', () => {
+    if (isMoving) return;
+    isMoving = true;
+    index++;
+    updateSlide();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (isMoving) return;
+    isMoving = true;
+    index--;
+    updateSlide();
+  });
+
+  track.addEventListener('transitionend', () => {
+    if (allSlides[index] === firstClone) {
+      index = 1;
+      updateSlide(false);
+    }
+
+    if (allSlides[index] === lastClone) {
+      index = allSlides.length - 2;
+      updateSlide(false);
+    }
+
+    isMoving = false;
+  });
+}
+
+
+// =========================
+// MOBILE MENU TOGGLE
+// =========================
+if (mobileMenu && navMenu) {
   mobileMenu.addEventListener('click', () => {
     mobileMenu.classList.toggle('active');
     navMenu.classList.toggle('active');
   });
 }
 
-// Close mobile menu when a link is clicked
-navLinks.forEach(link => {
-  link.addEventListener('click', () => {
-    mobileMenu.classList.remove('active');
-    navMenu.classList.remove('active');
-  });
-});
+// Close mobile menu + set active saat klik
+if (navLinks.length > 0) {
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu?.classList.remove('active');
+      navMenu?.classList.remove('active');
 
-// Navbar scroll effect
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+}
+
+// =========================
+// NAVBAR SCROLL EFFECT
+// =========================
 window.addEventListener('scroll', () => {
   if (window.scrollY > 100) {
-    navbar.classList.add('scrolled');
+    navbar?.classList.add('scrolled');
   } else {
-    navbar.classList.remove('scrolled');
+    navbar?.classList.remove('scrolled');
   }
-  
-  // Show/hide scroll to top button
+
   if (window.scrollY > 500) {
-    scrollTopBtn.classList.add('active');
+    scrollTopBtn?.classList.add('active');
   } else {
-    scrollTopBtn.classList.remove('active');
+    scrollTopBtn?.classList.remove('active');
   }
-  
-  // Update active menu item based on scroll position
+
   updateActiveNav();
 });
 
-// Scroll to top button functionality
+// =========================
+// UPDATE ACTIVE NAV (FIXED)
+// =========================
+function updateActiveNav() {
+  const sections = document.querySelectorAll('section');
+  if (sections.length === 0) return;
+
+  const navbarHeight = navbar ? navbar.offsetHeight : 80;
+
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    const sectionId = section.getAttribute('id');
+
+    // 🔥 cek apakah section sedang terlihat di viewport
+    if (
+      rect.top <= navbarHeight + 50 &&
+      rect.bottom >= navbarHeight + 50
+    ) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+
+        if (link.getAttribute('href') === `#${sectionId}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}
+
+// =========================
+// SMOOTH SCROLLING (FIXED)
+// =========================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (!target) return;
+
+    e.preventDefault();
+
+    const navbarHeight = navbar ? navbar.offsetHeight : 80;
+
+    // 🔥 pakai getBoundingClientRect (AKURAT)
+    const targetPosition =
+      target.getBoundingClientRect().top + window.pageYOffset;
+
+    window.scrollTo({
+      top: targetPosition - navbarHeight,
+      behavior: 'smooth'
+    });
+  });
+});
+
+// =========================
+// INIT SAAT LOAD (PENTING)
+// =========================
+window.addEventListener('load', () => {
+  updateActiveNav();
+});
+
+// =========================
+// SCROLL TO TOP BUTTON
+// =========================
 if (scrollTopBtn) {
   scrollTopBtn.addEventListener('click', () => {
     window.scrollTo({
@@ -54,91 +179,42 @@ if (scrollTopBtn) {
   });
 }
 
-// Update active navigation link based on scroll position
-function updateActiveNav() {
-  const sections = document.querySelectorAll('section');
-  const scrollPosition = window.scrollY + 200;
-  
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop;
-    const sectionHeight = section.offsetHeight;
-    const sectionId = section.getAttribute('id');
-    
-    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${sectionId}`) {
-          link.classList.add('active');
-        }
-      });
-    }
-  });
-}
-
-// Form submission handling
+// =========================
+// CONTACT FORM
+// =========================
 if (contactForm) {
-  contactForm.addEventListener('submit', (e) => {
+  contactForm.addEventListener('submit', e => {
     e.preventDefault();
-    
-    // Simple form validation
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
-    
+
+    const name = document.getElementById('name')?.value;
+    const email = document.getElementById('email')?.value;
+    const message = document.getElementById('message')?.value;
+
     if (!name || !email || !message) {
       alert('Please fill in all required fields.');
       return;
     }
-    
-    // In a real application, you would send this data to a server
+
     alert('Thank you for your message! We will get back to you soon.');
     contactForm.submit();
   });
 }
 
+// =========================
+// NEWSLETTER FORM
+// =========================
 if (newsletterForm) {
-  newsletterForm.addEventListener('submit', (e) => {
+  newsletterForm.addEventListener('submit', e => {
     e.preventDefault();
-    
-    const email = newsletterForm.querySelector('input[type="email"]').value;
-    
+
+    const email = newsletterForm.querySelector('input[type="email"]')?.value;
+
     if (!email) {
       alert('Please enter your email address.');
       return;
     }
-    
-    // In a real application, you would send this data to a server
-    alert('Thank you for subscribing to our newsletter!');
+
+    alert('Thank you for subscribing!');
     newsletterForm.reset();
   });
 }
-
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function(e) {
-    e.preventDefault();
-    
-    const target = document.querySelector(this.getAttribute('href'));
-    
-    if (target) {
-      window.scrollTo({
-        top: target.offsetTop - 80,
-        behavior: 'smooth'
-      });
-    }
-  });
-});
-
-// Initialize the page
-function init() {
-  // Set the first nav link as active by default
-  if (navLinks.length > 0) {
-    navLinks[0].classList.add('active');
-  }
-  
-  // Run update active nav on page load
-  updateActiveNav();
-}
-
-// Call init function when DOM is loaded
-document.addEventListener('DOMContentLoaded', init);
