@@ -10,6 +10,7 @@ export default defineConfig({
         couple: resolve(__dirname, 'couple.html'),
         graduation: resolve(__dirname, 'graduation.html'),
         special: resolve(__dirname, 'special.html'),
+        wcc: resolve(__dirname, 'wcc.html'),
       },
     },
   },
